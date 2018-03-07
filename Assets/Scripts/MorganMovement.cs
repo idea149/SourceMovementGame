@@ -26,8 +26,12 @@ public class MorganMovement : MonoBehaviour {
 		localVelocity = transform.InverseTransformDirection (rb.velocity);
 	}
 
-	void FixedUpdate () {
+	//updates every frame
+	void Update(){
+	}
 
+	//updates at some points in time probably
+	void FixedUpdate () {
 		var localVelocity = transform.InverseTransformDirection (rb.velocity);
 		speed = Mathf.Abs(transform.InverseTransformDirection (rb.velocity).x) + Mathf.Abs(transform.InverseTransformDirection (rb.velocity).z);
 		speedText.GetComponent<Text> ().text = "Speed: " + transform.InverseTransformDirection (rb.velocity).z;
@@ -42,12 +46,12 @@ public class MorganMovement : MonoBehaviour {
 
 		if (Physics.Raycast (transform.position, Vector3.down, (Collider.height / 2) + Collider.radius)) {
 			grounded = true;
+			rb.velocity = new Vector3 (rb.velocity.x, 0, rb.velocity.z);
 		} else {
 			grounded = false;
 		}
-		Debug.Log (grounded);
 
-		float realtime = UnityEngine.Time.deltaTime / UnityEngine.Time.timeScale;
+
 		//movement
 		if (grounded) {
 			moveSpeed = groundSpeed;
@@ -74,6 +78,8 @@ public class MorganMovement : MonoBehaviour {
 
 		//top grounded speed fix
 		if (grounded) {
+			float totalSpeed = rb.velocity.x + rb.velocity.z;
+			//woah slow down
 			if (localVelocity.x > maxspeed || localVelocity.x < maxspeed) {
 				rb.AddForce (transform.right * (maxspeed - localVelocity.x));
 			}
@@ -82,8 +88,7 @@ public class MorganMovement : MonoBehaviour {
 			}
 		}
 
-		//jump?
-		//TODO: For some reason jumping gets less extreme as you try to bhop (smaller hops)
+		//jump
 		if (Input.GetKey ("space") && grounded) {
 			rb.AddForce(0, jumpHeight, 0);
 		}
