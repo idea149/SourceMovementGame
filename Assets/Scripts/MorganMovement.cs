@@ -4,11 +4,16 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class MorganMovement : MonoBehaviour {
+	//Public stuff
 	public GameObject speedText;
 	public float speed;
-	public float moveSpeed = 5f;
-	public float gravity = 5;
+	public float groundSpeed;
+	public float airSpeed;
+	public float jumpHeight;
 	public float maxspeed;
+	//shhh this is private
+	float moveSpeed;
+	float prevAngle;
 	Rigidbody rb;
 	CapsuleCollider Collider;
 	bool grounded = false;
@@ -20,64 +25,82 @@ public class MorganMovement : MonoBehaviour {
 		Collider = GetComponent<CapsuleCollider> ();
 		localVelocity = transform.InverseTransformDirection (rb.velocity);
 	}
-	
-	// Update is called once per frame
+
 	void FixedUpdate () {
 
 		var localVelocity = transform.InverseTransformDirection (rb.velocity);
 		speed = Mathf.Abs(transform.InverseTransformDirection (rb.velocity).x) + Mathf.Abs(transform.InverseTransformDirection (rb.velocity).z);
 		speedText.GetComponent<Text> ().text = "Speed: " + transform.InverseTransformDirection (rb.velocity).z;
 
-		RaycastHit[] hits = Physics.CapsuleCastAll (transform.position + Collider.center+ (Vector3.one * (Collider.height / 2 - Collider.radius)), transform.position + Collider.center - (Vector3.one * (Collider.height / 2 - Collider.radius)), Collider.radius-.1f, Vector3.down, .4f);
+
+		//Detect if I'm on the ground or not
+		//Don't use the commented stuff it's a dumb capsule collider that doesn't work well
+		/*RaycastHit[] hits = Physics.CapsuleCastAll (transform.position + Collider.center+ (Vector3.one * (Collider.height / 2 - Collider.radius)), transform.position + Collider.center - (Vector3.one * (Collider.height / 2 - Collider.radius)), Collider.radius-.1f, Vector3.down, .4f);
 		foreach (RaycastHit objectHit in hits) {
 			grounded = (objectHit.transform.tag == "WorldGeometry");
+		}*/
+
+		if (Physics.Raycast (transform.position, Vector3.down, (Collider.height / 2) + Collider.radius)) {
+			grounded = true;
+		} else {
+			grounded = false;
 		}
+		Debug.Log (grounded);
 
 		float realtime = UnityEngine.Time.deltaTime / UnityEngine.Time.timeScale;
 		//movement
-		if (Input.GetKey("w")) {
+		if (grounded) {
+			moveSpeed = groundSpeed;
+		}
+		else {
+			moveSpeed = airSpeed;
+		}
+		if (Input.GetKey ("w")) {
 			//transform.Translate (Vector3.forward * moveSpeed * realtime);
-			rb.AddForce(transform.forward * 50);
+			rb.AddForce (transform.forward * moveSpeed);
 		}
-		if (Input.GetKey("a")) {
+		if (Input.GetKey ("a")) {
 			//transform.Translate (Vector3.left * moveSpeed * realtime);
-			rb.AddForce(-(transform.right * 50));
+			rb.AddForce (-(transform.right * moveSpeed));
 		}
-		if (Input.GetKey("s")) {
+		if (Input.GetKey ("s")) {
 			//transform.Translate (Vector3.back * moveSpeed * realtime);
-			rb.AddForce(-(transform.forward * 50));
+			rb.AddForce (-(transform.forward * moveSpeed));
 		}
-		if (Input.GetKey("d")) {
+		if (Input.GetKey ("d")) {
 			//transform.Translate (Vector3.right * moveSpeed * realtime);
-			rb.AddForce(transform.right * 50);
+			rb.AddForce (transform.right * moveSpeed);
 		}
+
 		//top grounded speed fix
+		if (grounded) {
+			if (localVelocity.x > maxspeed || localVelocity.x < maxspeed) {
+				rb.AddForce (transform.right * (maxspeed - localVelocity.x));
+			}
+			if (localVelocity.z > maxspeed || localVelocity.z < maxspeed) {
+				rb.AddForce (transform.forward * (maxspeed - localVelocity.z));
+			}
+		}
 
-		if (localVelocity.x > maxspeed) {
-			rb.AddForce(transform.right * (maxspeed-localVelocity.x));
-		}
-		if (localVelocity.z > maxspeed) {
-			rb.AddForce(transform.forward * (maxspeed-localVelocity.z));
-			Debug.Log (localVelocity.z);
-		}
-		rb.AddForce(0, -gravity, 0);
 		//jump?
+		//TODO: For some reason jumping gets less extreme as you try to bhop (smaller hops)
 		if (Input.GetKey ("space") && grounded) {
-			rb.AddForce(0, 250, 0);
+			rb.AddForce(0, jumpHeight, 0);
 		}
 
 
 
-		/*
-		var prevAngle = rb.rotation.eulerAngles.y;
+
+
 		//air strafe
 		if (rb.rotation.eulerAngles.y > prevAngle && !grounded && Input.GetKey ("d")) {
-			rb.AddForce(transform.forward * 500);
+			rb.AddForce(transform.forward * (groundSpeed * 2));
 		}
 		if (rb.rotation.eulerAngles.y < prevAngle && !grounded && Input.GetKey ("a")) {
-			rb.AddForce(transform.forward * 500);
+			rb.AddForce(transform.forward * (groundSpeed * 2));
 		}
-		*/
+
+		prevAngle = rb.rotation.eulerAngles.y;
 
 	}
 }
