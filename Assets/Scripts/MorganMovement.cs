@@ -78,13 +78,18 @@ public class MorganMovement : MonoBehaviour {
 
 		//top grounded speed fix
 		if (grounded) {
-			float totalSpeed = rb.velocity.x + rb.velocity.z;
+			rb.velocity = new Vector3(Mathf.Round (rb.velocity.x * 100)/100, Mathf.Round (rb.velocity.y * 100)/100, Mathf.Round (rb.velocity.z * 100)/100);
 			//woah slow down
-			if (localVelocity.x > maxspeed || localVelocity.x < maxspeed) {
-				rb.AddForce (transform.right * (maxspeed - localVelocity.x));
+			var totalSpeed = Mathf.Abs(rb.velocity.x + rb.velocity.y);
+			rb.AddForce (-(rb.velocity.normalized) * (groundSpeed/3));
+			if (localVelocity.x > maxspeed || localVelocity.z > maxspeed) {
+				rb.velocity = rb.velocity.normalized * (maxspeed-1);
+				//rb.AddForce (transform.right * (maxspeed - localVelocity.x));
 			}
-			if (localVelocity.z > maxspeed || localVelocity.z < maxspeed) {
-				rb.AddForce (transform.forward * (maxspeed - localVelocity.z));
+			if (localVelocity.z < -maxspeed || localVelocity.x < -maxspeed) {
+				rb.velocity = rb.velocity.normalized * (maxspeed-1);
+				Debug.Log ("aahaefh");
+				//rb.AddForce (transform.forward * (maxspeed - localVelocity.z));
 			}
 		}
 
