@@ -1,19 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class playerMovement : MonoBehaviour {
 
 	public GameObject speedText;
 	public float accel;
-	public float speed;
+	public float decel;
+	public float maxSpeed;
 
-
+	bool grounded;
 	Rigidbody rb;
 	CapsuleCollider Collider;
 	Vector3 moveGoal;
 
-	float acceltime = 0;
+	float playerSpeed = 0; //Read-only speed var
 
 	// Use this for initialization
 	void Start () {
@@ -23,22 +25,30 @@ public class playerMovement : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-		moveGoal = getMoveGoal();	//Get the direction I want to go in
-		if (moveGoal != Vector3.zero) {	//Avoid divide by 0
-			moveGoal = (moveGoal / ((Mathf.Abs(moveGoal.x) + Mathf.Abs(moveGoal.z)) / 2) *speed);	//Make sure the player doesn't go faster diagonally
-		}
-
-		//rb.velocity = moveGoal * speed;
-		rb.velocity = new Vector3 (moveGoal.x, rb.velocity.y, moveGoal.z); //Set velocity. Made this way so that Y velocity is always physics-based
-
-		Debug.Log (rb.velocity);
-		//delet this
-		if (rb.velocity == moveGoal) {
-			acceltime = 0;
+		//detect if on ground
+		if (Physics.Raycast (transform.position, Vector3.down, (Collider.height / 2) )) {
+			grounded = true;
+			rb.velocity = new Vector3 (rb.velocity.x, 0, rb.velocity.z);
 		} else {
-			acceltime += .1f;
+			grounded = false;
 		}
 
+		moveGoal = getMoveGoal();	//Get the direction I want to go in
+		if (grounded) {
+			if (moveGoal != Vector3.zero) {	//Avoid divide by 0
+				moveGoal = (moveGoal / ((Mathf.Abs (moveGoal.x) + Mathf.Abs (moveGoal.z)) / 2) * accel);	//Make sure the player doesn't go faster diagonally
+				if (Mathf.Abs (playerSpeed) <= maxSpeed) {
+					rb.velocity += moveGoal; //Accelerate player if they want to move
+				} else {
+					rb.velocity = new Vector3 (rb.velocity.x / 2, rb.velocity.y, rb.velocity.z / 2f); //Decelerate player, they're going to fast
+				}
+			} else {
+				rb.velocity = new Vector3 (rb.velocity.x / decel, rb.velocity.y, rb.velocity.z / decel);//Decelerate player, they want to stop
+			}
+		}
+
+		playerSpeed = Mathf.Abs(rb.velocity.x) + Mathf.Abs(rb.velocity.z); //calculate speed
+		speedText.GetComponent<Text>().text = "Speed: " + Mathf.Round(playerSpeed); //display speed
 	}
 
 	Vector3 getMoveGoal(){
