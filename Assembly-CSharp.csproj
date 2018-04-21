@@ -6,7 +6,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{0A0F2F0D-9B9C-8B11-7801-6EAAFB80012D}</ProjectGuid>
+    <ProjectGuid>{7AD3673A-CC79-9E80-6C63-E80CC56DCCB5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -47,9 +47,10 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\MorganMovement.cs" />
-     <Compile Include="Assets\Scripts\Movement.cs" />
+     <Compile Include="Assets\Scripts\Old\Movement.cs" />
+     <Compile Include="Assets\Scripts\Old\newMovement.cs" />
      <Compile Include="Assets\Scripts\mouseLook.cs" />
-     <Compile Include="Assets\Scripts\newMovement.cs" />
+     <Compile Include="Assets\Scripts\playerMovement.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
