@@ -9,6 +9,7 @@ public class playerMovement : MonoBehaviour {
 	public float accel;
 	public float decel;
 	public float maxSpeed;
+	public float jumpHeight;
 
 	bool grounded;
 	Rigidbody rb;
@@ -16,6 +17,7 @@ public class playerMovement : MonoBehaviour {
 	Vector3 moveGoal;
 
 	float playerSpeed = 0; //Read-only speed var
+	float lastGroundSpeed = 0;	//Read-only: how fast the player was on the ground only
 
 	// Use this for initialization
 	void Start () {
@@ -25,30 +27,47 @@ public class playerMovement : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
+
+		playerSpeed = Mathf.Abs(rb.velocity.x) + Mathf.Abs(rb.velocity.z); //calculate speed
+		speedText.GetComponent<Text>().text = "Speed: " + Mathf.Round(playerSpeed); //display speed
+
 		//detect if on ground
 		if (Physics.Raycast (transform.position, Vector3.down, (Collider.height / 2) )) {
+			//Capsule Collider Alternative (Kind of works): if (Physics.CapsuleCast (new Vector3(transform.position.x,transform.position.y + (Collider.height/4),transform.position.z), new Vector3(transform.position.x,transform.position.y-(Collider.height/4),transform.position.z), Collider.radius - .1f, Vector3.down, .1f)) {
 			grounded = true;
-			rb.velocity = new Vector3 (rb.velocity.x, 0, rb.velocity.z);
+			//rb.velocity = new Vector3 (rb.velocity.x, 0, rb.velocity.z);
 		} else {
 			grounded = false;
 		}
 
 		moveGoal = getMoveGoal();	//Get the direction I want to go in
-		if (grounded) {
-			if (moveGoal != Vector3.zero) {	//Avoid divide by 0
-				moveGoal = (moveGoal / ((Mathf.Abs (moveGoal.x) + Mathf.Abs (moveGoal.z)) / 2) * accel);	//Make sure the player doesn't go faster diagonally
-				if (Mathf.Abs (playerSpeed) <= maxSpeed) {
+		if (grounded) {	//I'm on the ground
+			lastGroundSpeed = Mathf.Abs(rb.velocity.x) + Mathf.Abs(rb.velocity.z); //Get speed on ground
+			if (moveGoal != Vector3.zero) {	//Do I want to move?
+				if (playerSpeed < maxSpeed) {
+					moveGoal = (moveGoal / ((Mathf.Abs (moveGoal.x) + Mathf.Abs (moveGoal.z)) / 2) * accel);	//Make sure the player doesn't go faster diagonally
 					rb.velocity += moveGoal; //Accelerate player if they want to move
 				} else {
-					rb.velocity = new Vector3 (rb.velocity.x / 2, rb.velocity.y, rb.velocity.z / 2f); //Decelerate player, they're going to fast
+					rb.velocity = (moveGoal / ((Mathf.Abs (moveGoal.x) + Mathf.Abs (moveGoal.z))) * (maxSpeed+1)); //new Vector3 (rb.velocity.x / 1.1f, rb.velocity.y, rb.velocity.z/ 1.1f); //Decelerate player, they're going to fast
+					Debug.Log(rb.velocity);
 				}
 			} else {
 				rb.velocity = new Vector3 (rb.velocity.x / decel, rb.velocity.y, rb.velocity.z / decel);//Decelerate player, they want to stop
 			}
 		}
+		else{ //Whee I'm flying
+			//Test for Air movement, Enable if you want broken air movement
+			//Vector3 moveGoalNormal = Vector3.Normalize(moveGoal);
+			//rb.velocity = new Vector3(moveGoalNormal.x * lastGroundSpeed,rb.velocity.y, moveGoalNormal.z * lastGroundSpeed);
+		}
 
-		playerSpeed = Mathf.Abs(rb.velocity.x) + Mathf.Abs(rb.velocity.z); //calculate speed
-		speedText.GetComponent<Text>().text = "Speed: " + Mathf.Round(playerSpeed); //display speed
+		//Jump
+		if (Input.GetKey ("space") && grounded == true) {
+			rb.AddForce (transform.up * jumpHeight);
+		}
+
+
+
 	}
 
 	Vector3 getMoveGoal(){
