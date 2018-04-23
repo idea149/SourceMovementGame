@@ -199,6 +199,7 @@ MonoBehaviour:
   decel: 2
   maxSpeed: 50
   jumpHeight: 500
+  airaccel: 2
 --- !u!1 &219784904
 GameObject:
   m_ObjectHideFlags: 0
