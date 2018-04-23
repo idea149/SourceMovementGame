@@ -13,6 +13,7 @@ public class playerMovement : MonoBehaviour {
 	public float airaccel;
 
 	bool grounded;
+	bool bhopfix;
 	Rigidbody rb;
 	CapsuleCollider Collider;
 	Vector3 moveGoal;
@@ -42,7 +43,7 @@ public class playerMovement : MonoBehaviour {
 			grounded = false;
 		}
 
-		if (grounded) {	//I'm on the ground
+		if (grounded && bhopfix) {	//I'm on the ground
 			lastGroundSpeed = Mathf.Abs(rb.velocity.x) + Mathf.Abs(rb.velocity.z); //Get speed on ground
 			if (moveGoal != Vector3.zero) {	//Do I want to move?
 				if (playerSpeed < maxSpeed) {
@@ -73,10 +74,14 @@ public class playerMovement : MonoBehaviour {
 		}
 
 		//Jump
-		if (Input.GetKey ("space") && grounded == true) {
-			rb.AddForce (transform.up * jumpHeight);
+		if (Input.GetKey ("space")) {
+			if (grounded == true){
+				rb.AddForce (transform.up * jumpHeight);
+			}
+			bhopfix = false;
+		} else {
+			bhopfix = true;
 		}
-
 
 
 	}
