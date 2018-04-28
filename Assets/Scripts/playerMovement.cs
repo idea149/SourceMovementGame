@@ -35,12 +35,13 @@ public class playerMovement : MonoBehaviour {
 		moveGoal = getMoveGoal();	//Get the direction I want to go in
 
 		//detect if on ground
-		if (Physics.Raycast (transform.position, Vector3.down, (Collider.height / 2) )) {
-			//Capsule Collider Alternative (Kind of works): if (Physics.CapsuleCast (new Vector3(transform.position.x,transform.position.y + (Collider.height/4),transform.position.z), new Vector3(transform.position.x,transform.position.y-(Collider.height/4),transform.position.z), Collider.radius - .1f, Vector3.down, .1f)) {
+		// Old Method: if (Physics.Raycast (transform.position, -gameObject.transform.up, (Collider.height / 2) + 0.01f )) {
+		if (Physics.CapsuleCast (new Vector3(transform.position.x,transform.position.y + (Collider.height/4),transform.position.z), new Vector3(transform.position.x,transform.position.y-(Collider.height/4),transform.position.z), Collider.radius - .1f, Vector3.down, .11f)) {
 			grounded = true;
-			//rb.velocity = new Vector3 (rb.velocity.x, 0, rb.velocity.z);
+			Debug.Log("grounded");
 		} else {
 			grounded = false;
+			Debug.Log("NOT grounded");
 		}
 
 		if (grounded && bhopfix) {	//I'm on the ground
@@ -59,7 +60,6 @@ public class playerMovement : MonoBehaviour {
 		else{ //Whee I'm flying
 			float currentspeed =  Vector3.Dot(rb.velocity, moveGoal);
 			float currentspeedNormalized =  Vector3.Dot(rb.velocity.normalized, moveGoal);
-			Debug.Log (currentspeedNormalized);
 			if (currentspeedNormalized < 1.1 && currentspeedNormalized > .9) {
 			}
 			else{
