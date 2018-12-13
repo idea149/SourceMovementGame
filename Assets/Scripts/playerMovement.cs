@@ -86,8 +86,11 @@ public class playerMovement : MonoBehaviour {
 
 	}
 
-	Vector3 getMoveGoal(){
-		if (Input.GetKey ("w")) {
+    Vector3 getMoveGoal()
+    {
+        // This code sucks:
+        /*
+        if (Input.GetKey ("w")) {
 			if (Input.GetKey ("a")) {
 				return(transform.forward - transform.right);
 			} else if (Input.GetKey ("d")) {
@@ -110,5 +113,27 @@ public class playerMovement : MonoBehaviour {
 		} else {
 			return(Vector3.zero);
 		}
-	}
+        */
+
+        Vector3 endDirection = new Vector3(0, 0, 0);
+        if (Input.GetKey("w"))
+        {
+            endDirection += transform.forward;
+        }
+        else if (Input.GetKey("s"))
+        {
+            endDirection -= transform.forward;
+        }
+
+        if (Input.GetKey("a"))
+        {
+            endDirection -= transform.right;
+        }
+        else if (Input.GetKey("d"))
+        {
+            endDirection += transform.right;
+        }
+        endDirection.Normalize();
+        return (endDirection);
+    }
 }
