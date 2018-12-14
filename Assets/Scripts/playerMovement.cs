@@ -30,34 +30,35 @@ public class playerMovement : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate () {
 
-		playerSpeed = Mathf.Abs(rb.velocity.x) + Mathf.Abs(rb.velocity.z); //calculate speed
-		speedText.GetComponent<Text>().text = "Speed: " + Mathf.Round(playerSpeed); //display speed
+        playerSpeed = rb.velocity.magnitude;//Mathf.Abs(rb.velocity.x) + Mathf.Abs(rb.velocity.z); //calculate speed
+
+        speedText.GetComponent<Text>().text = "Speed: " + Mathf.Round(playerSpeed); //display speed
 		moveGoal = getMoveGoal();	//Get the direction I want to go in
 
 		//detect if on ground
 		// Old Method: if (Physics.Raycast (transform.position, -gameObject.transform.up, (Collider.height / 2) + 0.01f )) {
 		if (Physics.CapsuleCast (new Vector3(transform.position.x,transform.position.y + (Collider.height/4),transform.position.z), new Vector3(transform.position.x,transform.position.y-(Collider.height/4),transform.position.z), Collider.radius - .1f, Vector3.down, .11f)) {
 			grounded = true;
-			Debug.Log("grounded");
 		} else {
 			grounded = false;
-			Debug.Log("NOT grounded");
 		}
 
 		if (grounded && bhopfix) {	//I'm on the ground
 			lastGroundSpeed = Mathf.Abs(rb.velocity.x) + Mathf.Abs(rb.velocity.z); //Get speed on ground
 			if (moveGoal != Vector3.zero) {	//Do I want to move?
-				if (playerSpeed < maxSpeed) {
+				if (playerSpeed <= maxSpeed) {
 					moveGoal = (moveGoal / ((Mathf.Abs (moveGoal.x) + Mathf.Abs (moveGoal.z)) / 2) * accel);	//Make sure the player doesn't go faster diagonally
 					rb.velocity += moveGoal; //Accelerate player if they want to move
 				} else {
-					rb.velocity = (moveGoal / ((Mathf.Abs (moveGoal.x) + Mathf.Abs (moveGoal.z))) * (maxSpeed+1)); //Cap player speed
-				}
+                    rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxSpeed);
+                    //rb.velocity = rb.velocity.normalized * maxSpeed; //cap player speed
+                }
 			} else {
-				rb.velocity = new Vector3 (rb.velocity.x / decel, rb.velocity.y, rb.velocity.z / decel);//Decelerate player, they want to stop
+                rb.velocity = new Vector3 (rb.velocity.x / decel, rb.velocity.y, rb.velocity.z / decel);//Decelerate player, they want to stop
 			}
 		}
 		else{ //Whee I'm flying
+
 			float currentspeed =  Vector3.Dot(rb.velocity, moveGoal);
 			float currentspeedNormalized =  Vector3.Dot(rb.velocity.normalized, moveGoal);
 			if (currentspeedNormalized < 1.1 && currentspeedNormalized > .9) {
@@ -68,6 +69,8 @@ public class playerMovement : MonoBehaviour {
 					rb.velocity += (moveGoal / ((Mathf.Abs (moveGoal.x) + Mathf.Abs (moveGoal.z)))) * addspeed;
 				}
 			}
+
+
 			//Test for Air movement, Enable if you want broken air movement
 			//Vector3 moveGoalNormal = Vector3.Normalize(moveGoal);
 			//rb.velocity = new Vector3(moveGoalNormal.x * lastGroundSpeed,rb.velocity.y, moveGoalNormal.z * lastGroundSpeed);
@@ -120,16 +123,15 @@ public class playerMovement : MonoBehaviour {
         {
             endDirection += transform.forward;
         }
-        else if (Input.GetKey("s"))
+        if (Input.GetKey("s"))
         {
             endDirection -= transform.forward;
         }
-
         if (Input.GetKey("a"))
         {
             endDirection -= transform.right;
         }
-        else if (Input.GetKey("d"))
+        if (Input.GetKey("d"))
         {
             endDirection += transform.right;
         }
