@@ -17,8 +17,9 @@ public class playerMovement : MonoBehaviour {
 	Rigidbody rb;
 	CapsuleCollider Collider;
 	Vector3 moveGoal;
+    Vector3 moveGoalMod;
 
-	float playerSpeed = 0; //Read-only speed var
+    float playerSpeed = 0; //Read-only speed var
 	float lastGroundSpeed = 0;	//Read-only: how fast the player was on the ground only
 
 	// Use this for initialization
@@ -59,14 +60,19 @@ public class playerMovement : MonoBehaviour {
 		}
 		else{ //Whee I'm flying
 
-			float currentspeed =  Vector3.Dot(rb.velocity, moveGoal);
-			float currentspeedNormalized =  Vector3.Dot(rb.velocity.normalized, moveGoal);
-			if (currentspeedNormalized < 1.1 && currentspeedNormalized > .9) {
+            Vector3 velCut = new Vector3(rb.velocity.x,0,rb.velocity.z);
+
+			float currentspeed =  Vector3.Dot(velCut, moveGoalMod);
+			float currentspeedNormalized =  Vector3.Dot(velCut.normalized, moveGoalMod);
+            Debug.Log(currentspeedNormalized);
+
+            if (Mathf.Abs(currentspeedNormalized) < 1.1 && Mathf.Abs(currentspeedNormalized) > .9) {
+                //rb.velocity = rb.velocity;
 			}
 			else{
-				float addspeed = ((Mathf.Abs (moveGoal.x) + Mathf.Abs (moveGoal.z))) - currentspeed;
-				if (moveGoal != Vector3.zero) {
-					rb.velocity += (moveGoal / ((Mathf.Abs (moveGoal.x) + Mathf.Abs (moveGoal.z)))) * addspeed;
+				float addspeed = ((Mathf.Abs (moveGoalMod.x) + Mathf.Abs (moveGoalMod.z))) - currentspeed;
+				if (moveGoalMod != Vector3.zero) {
+					rb.velocity += (moveGoalMod / ((Mathf.Abs (moveGoalMod.x) + Mathf.Abs (moveGoalMod.z)))) * addspeed;
 				}
 			}
 
@@ -91,32 +97,6 @@ public class playerMovement : MonoBehaviour {
 
     Vector3 getMoveGoal()
     {
-        // This code sucks:
-        /*
-        if (Input.GetKey ("w")) {
-			if (Input.GetKey ("a")) {
-				return(transform.forward - transform.right);
-			} else if (Input.GetKey ("d")) {
-				return(transform.forward + transform.right);
-			} else {
-				return(transform.forward);
-			}
-		} else if (Input.GetKey ("s")) {
-			if (Input.GetKey ("a")) {
-				return(-transform.forward - transform.right);
-			} else if (Input.GetKey ("d")) {
-				return(-transform.forward + transform.right);
-			} else {
-				return(-transform.forward);
-			}
-		} else if (Input.GetKey ("a")) {
-			return(-transform.right);
-		} else if (Input.GetKey ("d")) {
-			return(transform.right);
-		} else {
-			return(Vector3.zero);
-		}
-        */
 
         Vector3 endDirection = new Vector3(0, 0, 0);
         if (Input.GetKey("w"))
@@ -129,12 +109,16 @@ public class playerMovement : MonoBehaviour {
         }
         if (Input.GetKey("a"))
         {
+            moveGoalMod = -transform.right;
             endDirection -= transform.right;
         }
         if (Input.GetKey("d"))
         {
+            moveGoalMod = transform.right;
             endDirection += transform.right;
         }
+        moveGoalMod.Normalize();
+
         endDirection.Normalize();
         return (endDirection);
     }
