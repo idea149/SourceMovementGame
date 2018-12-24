@@ -402,30 +402,10 @@ Prefab:
       propertyPath: speedText
       value: 
       objectReference: {fileID: 1802605282}
-    - target: {fileID: 114114468524040484, guid: 76f8fbe33d0d968429b0db69743a02b8,
+    - target: {fileID: 136975972096684030, guid: 76f8fbe33d0d968429b0db69743a02b8,
         type: 2}
-      propertyPath: speedText
-      value: 
-      objectReference: {fileID: 1802605282}
-    - target: {fileID: 114163065297301320, guid: 76f8fbe33d0d968429b0db69743a02b8,
-        type: 2}
-      propertyPath: jumpHeight
-      value: 400
-      objectReference: {fileID: 0}
-    - target: {fileID: 114163065297301320, guid: 76f8fbe33d0d968429b0db69743a02b8,
-        type: 2}
-      propertyPath: accel
+      propertyPath: m_Height
       value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 114114468524040484, guid: 76f8fbe33d0d968429b0db69743a02b8,
-        type: 2}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114163065297301320, guid: 76f8fbe33d0d968429b0db69743a02b8,
-        type: 2}
-      propertyPath: m_Enabled
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 76f8fbe33d0d968429b0db69743a02b8, type: 2}
@@ -773,7 +753,7 @@ GameObject:
   - component: {fileID: 1826250669}
   m_Layer: 0
   m_Name: TEST
-  m_TagString: Untagged
+  m_TagString: WorldGeometry
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -845,33 +825,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1964226879 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1727664364651618, guid: 76f8fbe33d0d968429b0db69743a02b8,
-    type: 2}
-  m_PrefabInternal: {fileID: 1055275955}
---- !u!114 &1964226886
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1964226879}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 247442469, guid: f7b54ff4a43d4fcf81b4538b678e0bcc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SurfaceParent: {fileID: 0}
-  m_FreezeUpdates: 0
-  m_VolumeType: 1
-  m_SphereRadius: 2
-  m_HalfBoxExtents: {x: 4, y: 4, z: 4}
-  m_LodType: 1
-  m_NumUpdatesBeforeRemoval: 10
-  m_SecondsBetweenUpdates: 2.5
-  m_Layer: 0
-  m_Material: {fileID: 0}
-  m_EnableCollisions: 1
 --- !u!1 &2011504180
 GameObject:
   m_ObjectHideFlags: 0
