@@ -36,13 +36,13 @@ public class playerMovement : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate () {
 
-        playerSpeed = rb.velocity.magnitude;//Mathf.Abs(rb.velocity.x) + Mathf.Abs(rb.velocity.z); //calculate speed
+        playerSpeed = rb.velocity.magnitude - Mathf.Abs(rb.velocity.y);//Mathf.Abs(rb.velocity.x) + Mathf.Abs(rb.velocity.z); //calculate speed
 
         speedText.GetComponent<Text>().text = "Speed: " + Mathf.Round(playerSpeed); //display speed
 		moveGoal = getMoveGoal();   //Get the direction I want to go in
 
         //detect if on ground
-        // Old Method: if (Physics.Raycast (transform.position, -gameObject.transform.up, (Collider.height / 2) + 0.01f )) {
+        // Old Method(s): if (Physics.Raycast (transform.position, -gameObject.transform.up, (Collider.height / 2) + 0.01f )) {
         //Physics.CapsuleCast(new Vector3(transform.position.x, transform.position.y + (Collider.height / 4), transform.position.z), new Vector3(transform.position.x, transform.position.y - (Collider.height / 4), transform.position.z), Collider.radius - .1f, Vector3.down, .11f);
         //boxCastHit = Physics.BoxCast(transform.position + new Vector3(0,1,0), new Vector3(Collider.radius - 0.1f, Collider.height / 2, Collider.radius - 0.1f), Vector3.down, out hit, transform.rotation, (Collider.height/2) + 0.01f);
 
@@ -128,7 +128,7 @@ public class playerMovement : MonoBehaviour {
         float currentspeed = Vector3.Dot(velCut, moveGoalMod);
         float currentspeedNormalized = Vector3.Dot(velCut.normalized, moveGoalMod);
 
-        float rawCurrentspeedNormalized = Vector3.Dot(velCut.normalized, moveGoal);
+        float rawCurrentspeedNormalized = Vector3.Dot(transform.forward, moveGoal);
 
 
         if (Mathf.Abs(currentspeedNormalized) < 1.1 && Mathf.Abs(currentspeedNormalized) > .9)
@@ -143,10 +143,20 @@ public class playerMovement : MonoBehaviour {
                 rb.velocity += (moveGoalMod / ((Mathf.Abs(moveGoalMod.x) + Mathf.Abs(moveGoalMod.z)))) * addspeed;
             }
         }
-
-        if (Mathf.Abs(rawCurrentspeedNormalized) < .8 && Mathf.Abs(rawCurrentspeedNormalized) > .6)
+        Debug.Log(rawCurrentspeedNormalized);
+        /*
+        if (rawCurrentspeedNormalized >= 0.7 && playerSpeed < maxSpeed/2) //Allows the player to move forward in the air for more precise jumps
         {
-            rb.velocity += transform.forward * .1f;
+            rb.velocity += transform.forward * .5f;
+        }
+        else if (rawCurrentspeedNormalized <= -0.7 && playerSpeed < maxSpeed / 2)
+        {
+            rb.velocity -= transform.forward * .5f;
+        }*/
+
+        if(playerSpeed < maxSpeed / 2)
+        {
+            rb.velocity += moveGoal/2;  //minor air control for low speeds
         }
     }
 
